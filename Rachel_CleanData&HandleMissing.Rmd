@@ -1,0 +1,87 @@
+---
+title: "Rachel's Replication: Clean Data & Handle Missing"
+author: "Rachel Ganly"
+date: "9/27/2021"
+output: html_document
+---
+
+Clear the data space
+1. Load required packages for analyses.  
+2. Converting data from the GSS into a tibble.  
+3. Cleaning and coding variables to be used in the analyses.  
+4. Dropping all variables but the ones used in analyses.  
+5. Labeling those variables. 
+
+```{r}
+
+#Follow Tyler's instructions from the Shell File
+
+#1. Load required packages for analyses
+
+# Clear dataspace
+rm(list = ls())
+
+library(tidyverse)
+library(haven)
+library(skimr)
+library(naniar)
+library(Hmisc)
+library(sjlabelled)
+library(gt)
+library(gtsummary)
+# Rachel's comments: Found these packages in the list on Github
+
+
+
+# 2. Converting data from the GSS into a tibble.  
+
+gss<-read.csv("gss_2017.csv") #Loaded file gss_2017 per the instructions
+gss<-as_tibble(gss)
+
+
+# 3. Cleaning and coding variables to be used in the analyses.  
+# Rachel's comment: cannot find a list of variables to be used, except by reading the code
+
+
+  # Self-Rated Health (Ordinal)
+      # Coded Excellent (1) - Poor (5)
+  # Self-Rated Mental Health (Ordinal)
+      # Coded Excellent (1) - Poor (5)
+  # Educational Attainment (Ordinal)
+      # Coded HS or Less (1) | Some College (2) | Bachelor's + (3)
+ # Age in Years (Continuous; capped at 80)
+
+  # Sex (Binary)
+      # Coded Male (0) | Female (1)
+
+  # Marital Status (Changing from Nominal to Dichotomous)
+      # Married/Common Law = Married (1) | All Else = Not Married (0)
+
+  # Family Income (Ordinal)
+      # Values are: 1) Less than $25k; 2) $25k to $49.999k; 3) $50k to 74.999k;
+      #             4) $75k to $99.999k; 5) $100k to $124.999k; 6) $125k or more
+
+  # Number of Children in Household (Discrete)
+
+ # Visible Minority (Binary) 
+      # Coded Yes (1) | No(0)
+
+
+# LABELLING VARIABLES AND VALUES
+
+
+#4. Dropping all variables but the ones used in analyses.  
+
+
+#5. Label variables. 
+
+
+```
+
+
+```{r}
+#Handle Missing Data
+
+# Rachel's comment: I could not find out how to do this without reading the code in full 
+
+```
