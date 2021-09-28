@@ -29,20 +29,35 @@ library(Hmisc)
 library(sjlabelled)
 library(gt)
 library(gtsummary)
-# Rachel's comments: Found these packages in the list on Github
+# Rachel's comments: Found these packages in the Readme list on GitHub
 
 
+```
+
+```{r}
 
 # 2. Converting data from the GSS into a tibble.  
 
-gss<-read.csv("gss_2017.csv") #Loaded file gss_2017 per the instructions
-gss<-as_tibble(gss)
+gss_rachel<-read.csv("gss_2017.csv") #Loaded file gss_2017 per the instructions
+gss_rachel<-as_tibble(gss_rachel)
 
 
 # 3. Cleaning and coding variables to be used in the analyses.  
 # Rachel's comment: cannot find a list of variables to be used, except by reading the code
 
+gss_rachel <- gss_rachel %>%
+  select(c(SRH_110,                   # Self-Rated Health
+           SRH_115,                   # Self-Rated Mental Health
+           EHG3_01B,                  # Highest Educational Attainment
+           AGEC,                      # Respondent's Age in Years
+           SEX,                       # Respondent's Sex
+           MARSTAT,                   # Marital Status
+           FAMINCG2,                  # Family Income
+           CHRINHDC,                  # Number of Children in Household
+           VISMIN,                    # Visible Minority
+           WGHT_PER))                 # Individual Survey Weight
 
+# Create new values
   # Self-Rated Health (Ordinal)
       # Coded Excellent (1) - Poor (5)
   # Self-Rated Mental Health (Ordinal)
@@ -50,31 +65,48 @@ gss<-as_tibble(gss)
   # Educational Attainment (Ordinal)
       # Coded HS or Less (1) | Some College (2) | Bachelor's + (3)
  # Age in Years (Continuous; capped at 80)
-
   # Sex (Binary)
       # Coded Male (0) | Female (1)
-
   # Marital Status (Changing from Nominal to Dichotomous)
       # Married/Common Law = Married (1) | All Else = Not Married (0)
-
   # Family Income (Ordinal)
       # Values are: 1) Less than $25k; 2) $25k to $49.999k; 3) $50k to 74.999k;
       #             4) $75k to $99.999k; 5) $100k to $124.999k; 6) $125k or more
-
   # Number of Children in Household (Discrete)
-
  # Visible Minority (Binary) 
       # Coded Yes (1) | No(0)
+
+gss_rachel<-gss_rachel%>%mutate(srh=SRH_110,
+                  mental_srh=SRH_115,
+                  education=case_when(EHG3_01B<=2~1,
+                                      EHG3_01B>=3&EHG3_01B<=5~2,
+                                      EHG3_01B>=6&EHG3_01B<=7~3),
+                  age=AGEC,
+                  sex=case_when(SEX==1~0,
+                                SEX==2~1),
+                  marital_status=case_when(MARSTAT == 1 | MARSTAT == 2 ~ 1,
+                                          MARSTAT >= 3 & MARSTAT <= 6 ~ 0),  
+           family_income=as.integer(FAMINCG2),                  # Family Income
+           number_children=as.integer(CHRINHDC),                  # Number of Children in Household
+           visible_minority=case_when(VISMIN == 1 ~ 1,
+                                      VISMIN == 2 ~ 0),                 # Visible Minority
+           individual_survey_weight=WGHT_PER)             # Individual Survey Weight
+
+                  
 
 
 # LABELLING VARIABLES AND VALUES
 
 
-#4. Dropping all variables but the ones used in analyses.  
+#4. Dropping all variables but the ones used in analyses. 
+# Rachels Note: could only find the list of variables to be used by looking at the code and had already dropped most values earlier so I initially skipped this step but went back to add it later
+
 
 
 #5. Label variables. 
+# No notes on labelling of variables except by looking at the code
 
+save(gss_rachel, file="GSS_Cleaned_Rachel.csv")
 
 ```
 
@@ -82,6 +114,30 @@ gss<-as_tibble(gss)
 ```{r}
 #Handle Missing Data
 
-# Rachel's comment: I could not find out how to do this without reading the code in full 
+
+#1. Recodes missing values of self-rated health and self-rated mental health (other measures were assigned missing values during the cleaning phase).  
+# 2. Creates an index called "sampmiss" that is a count of how many variables that each respondent has missing values.  
+#  3. Creates a dataset called "sample" that only contains cases with no missing values.
+
+# Rachel's comment: I could not find out how to do this using the instructions or comments (for example how were the values recoded in step 1); so I had to read and copy the code
+
+# CODING DATA VALUES AS MISSING
+    # Note: Variables not included have no missing data or were already coded 
+    # in the cleaning stage
+
+gss_rachel <- gss_rachel %>% replace_with_na(replace = list(srh =       c(7, 8, 9),
+                                              mental_srh =     c(7, 8, 9)))
+
+
+# CREATING SAMPLE VARIABLE FOR ANALYSES
+    # Will use this variable to filter out cases missing any data
+gss_rachel <- gss_rachel %>% mutate(sampmiss = rowSums(is.na(.)))
+gss_rachel %>% count(sampmiss)
+
+# SAMPLE DATASET WHICH EXCLUDES MISSING DATA (LISTWISE DELETION)
+sample <- gss_rachel %>% filter(sampmiss == 0)
+
+save(gss_rachel, file="GSS_NoMissing_Rachel.csv")
+
 
 ```
