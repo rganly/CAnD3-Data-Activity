@@ -31,6 +31,7 @@ First, run the script named **"Cleaning Data.R"** to complete the following task
 5. Labeling those variables.  
 
 >>>>>>> 76651f5c93412b0f62826a4b8dc56a075e83685f
+
 ```{r, code=xfun::read_utf8('Cleaning Data.R'), include = FALSE}
 
 ```
